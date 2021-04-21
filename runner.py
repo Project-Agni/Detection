@@ -1,5 +1,6 @@
 import argparse
 
+import gym
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -7,6 +8,13 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 from torch.utils import data
 from torchvision import datasets, transforms
+
+import gym_env
+
+gym_env.dummy()
+
+
+# Just to call register which is also present in __init__.py of gym_env
 
 
 class Net(nn.Module):
@@ -159,6 +167,9 @@ def main():
         default=False,
         help="For Saving the current Model",
     )
+    parser.add_argument(
+        "--arch", type=str, default="dqn", help="Can be either of CNN, DQN"
+    )
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -175,7 +186,7 @@ def main():
 
     transform = transforms.Compose(
         [
-            transforms.Resize((128, 128)),
+            transforms.Resize((256, 256)),
             transforms.ToTensor(),
             transforms.Normalize((0.4363, 0.3613, 0.3098), (0.2360, 0.2087, 0.1925)),
         ]
@@ -194,13 +205,20 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+
+    if args.arch.lower() == "dqn":
+        # Initialization of the environment
+        env = gym.make("ProjectAgni-v0")
+        # Fill values
+        # env.init_dataset(X, y, batch_size=batch_size, output_shape=input_shape)
+
     for epoch in range(1, args.epochs + 1):
         train(args, model, device, train_loader, optimizer, epoch)
         test(model, device, test_loader)
         scheduler.step()
 
     if args.save_model:
-        torch.save(model.state_dict(), "project_agni_cnn.pt")
+        torch.save(model.state_dict(), f"project_agni_{args.arch}.pt")
 
 
 if __name__ == "__main__":
