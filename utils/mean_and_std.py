@@ -20,8 +20,8 @@ def main():
         mean += images.mean(2).sum(0)
         std += images.std(2).sum(0)
 
-    mean /= len(loader.dataset)
-    std /= len(loader.dataset)
+    mean /= len(dataset)
+    std /= len(dataset)
 
     print(f"Mean: {mean} \t Std: {std}")
 
