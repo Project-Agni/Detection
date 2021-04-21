@@ -116,7 +116,8 @@ def main():
             "ProjectAgni-v0", train_loader=train_loader, test_loader=test_loader
         )
         env.init_dataset(train_loader, test_loader)
-        model = dqn.QNet().to(device)
+        online_model = dqn.QNet().to(device)
+        target_model = dqn.QNet().to(device)
     elif args.arch.lower() == "cnn":
         model = cnn.CNN().to(device)
         env = None
