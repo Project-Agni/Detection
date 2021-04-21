@@ -19,7 +19,8 @@ class Env4RLClassification(gym.Env):
     y : numpy array
         Target values
     """
-    metadata = {'render.modes': ['none']}
+
+    metadata = {"render.modes": ["none"]}
 
     def __init__(self):
         super(Env4RLClassification, self).__init__()
@@ -35,7 +36,15 @@ class Env4RLClassification(gym.Env):
         self.action = None
         self.status = None
 
-    def init_dataset(self, X=None, y=None, batch_size=None, output_shape=None, randomize=False, custom_rewards=None):
+    def init_dataset(
+            self,
+            X=None,
+            y=None,
+            batch_size=None,
+            output_shape=None,
+            randomize=False,
+            custom_rewards=None,
+    ):
 
         self.batch_size = batch_size
         self.output_shape = output_shape
@@ -69,7 +78,9 @@ class Env4RLClassification(gym.Env):
         self.episode_over = np.array([False] * len(self.current_indices))
         self.true_labels = np.take(self.y, self.current_indices, axis=0).ravel()
         if self.output_shape:
-            return np.take(self.X, self.current_indices, axis=0).reshape(-1, *self.output_shape)
+            return np.take(self.X, self.current_indices, axis=0).reshape(
+                -1, *self.output_shape
+            )
         else:
             return np.take(self.X, self.current_indices, axis=0)
 
@@ -88,10 +99,13 @@ class Env4RLClassification(gym.Env):
             if last_element == max(self.current_indices):
                 self.current_indices += self.batch_size
                 dif = max(self.current_indices) - len(self.X)
-                self.current_indices[len(self.current_indices) - dif - 1:len(self.current_indices)] = list(
-                    range(dif + 1))
+                self.current_indices[
+                    len(self.current_indices) - dif - 1: len(self.current_indices)
+                ] = list(range(dif + 1))
             else:
-                self.current_indices = np.arange(last_element + 1, last_element + 1 + self.batch_size, dtype=np.int32)
+                self.current_indices = np.arange(
+                    last_element + 1, last_element + 1 + self.batch_size, dtype=np.int32
+                )
         else:
             self.current_indices += self.batch_size
 
@@ -99,7 +113,9 @@ class Env4RLClassification(gym.Env):
         self.true_labels = np.take(self.y, self.current_indices, axis=0).ravel()
 
         if self.output_shape:
-            self.status = np.take(self.X, self.current_indices, axis=0).reshape(-1, *self.output_shape)
+            self.status = np.take(self.X, self.current_indices, axis=0).reshape(
+                -1, *self.output_shape
+            )
         else:
             self.status = np.take(self.X, self.current_indices, axis=0)
 
