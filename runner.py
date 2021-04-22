@@ -19,14 +19,14 @@ def main():
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=64,
+        default=32,
         metavar="N",
         help="input batch size for training (default: 64)",
     )
     parser.add_argument(
         "--test-batch-size",
         type=int,
-        default=1000,
+        default=64,
         metavar="N",
         help="input batch size for testing (default: 1000)",
     )
@@ -86,7 +86,7 @@ def main():
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
-    train_kwargs = {"batch_size": args.batch_size}
+    train_kwargs = {"batch_size": args.batch_size, "drop_last": True}
     test_kwargs = {"batch_size": args.test_batch_size}
     if use_cuda:
         cuda_kwargs = {"num_workers": 1, "pin_memory": True, "shuffle": True}
@@ -115,16 +115,18 @@ def main():
         env = gym.make(
             "ProjectAgni-v0", train_loader=train_loader, test_loader=test_loader
         )
-        env.init_dataset(train_loader, test_loader)
-        online_model = dqn.QNet().to(device)
-        target_model = dqn.QNet().to(device)
+        _ = env.reset()
+
+        # online_model = dqn.QNet().to(device)
+        # target_model = dqn.QNet().to(device)
+        model = dqn.QNet().to(device)
     elif args.arch.lower() == "cnn":
-        model = cnn.CNN().to(device)
         env = None
+        model = cnn.CNN().to(device)
     else:
         raise NotImplementedError
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
 
     for epoch in range(1, args.epochs + 1):

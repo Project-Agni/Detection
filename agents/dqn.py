@@ -1,24 +1,43 @@
+import numpy as np
 import torch
 import torch.nn.functional as F
 
-from agents.cnn import Net
+from agents.cnn import CNN
 
 decay_rate = 0.99
-gamma = 0.001
+gamma = 0
+epsilon = -0.001
 
 
-class QNet(Net):
+class QNet(CNN):
     def __init__(self):
         super(QNet, self).__init__()
 
     @classmethod
-    def train_model(cls, args, model, device, train_loader, optimizer, epoch, **kwargs):
+    def train_model(cls, args, model, device, train_loader, optimizer, epoch, env=None, **kwargs):
         model.train()
-        for batch_idx, (data, target) in enumerate(train_loader):
+        _ = env.reset()
+        batch_idx, (data, target) = next(enumerate(train_loader))
+        batch_idx = -1
+
+        for next_batch_idx, (next_data, next_target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
+            next_data, next_target = next_data.to(device), next_target.to(device)
+            env.save_step_targets(target)
             optimizer.zero_grad()
-            output = model(data)
-            loss = F.nll_loss(output, target)
+
+            q, action = get_action(data, model, env)
+            q = q.to(device)
+            _, rewards, _, _ = env.step(action)
+
+            q_prime = model(next_data)
+            indx = torch.argmax(q_prime, dim=1)
+            # sx = np.arange(len(indx))
+            targets = rewards + gamma * indx
+            # q[sx, action] = targets
+
+            # output = model(data)
+            loss = F.nll_loss(q, target)
             loss.backward()
             optimizer.step()
             if batch_idx % args.log_interval == 0:
@@ -34,8 +53,10 @@ class QNet(Net):
                 if args.dry_run:
                     break
 
+            batch_idx, (data, target) = next_batch_idx, (next_data, next_target)
+
     @classmethod
-    def train_model(cls, online_net, target_net, optimizer, batch, **kwargs):
+    def train_agent(cls, online_net, target_net, optimizer, batch, **kwargs):
         states = torch.stack(batch.state)
         next_states = torch.stack(batch.next_state)
         actions = torch.Tensor(batch.action).float()
@@ -56,7 +77,20 @@ class QNet(Net):
 
         return loss
 
-    def get_action(self, input):
-        qvalue = self.forward(input)
-        _, action = torch.max(qvalue, 1)
-        return action.numpy()[0]
+    def get_action(self, state):
+        qvalue = self.forward(state)
+        actions = torch.argmax(qvalue, dim=1)
+        return qvalue, actions
+
+
+def get_action(state, target_net, env):
+    if np.random.rand() <= epsilon:
+        bs = len(state)
+        return torch.zeros([bs, 2], dtype=torch.float), env.action_space.sample()
+    else:
+        return target_net.get_action(state)
+
+
+def update_target_model(online_net, target_net):
+    # Target <- Net
+    target_net.load_state_dict(online_net.state_dict())

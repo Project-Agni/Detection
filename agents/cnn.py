@@ -11,7 +11,7 @@ class CNN(nn.Module):
         self.dropout1 = nn.Dropout(0.5)
         self.dropout2 = nn.Dropout(0.5)
         self.dropout3 = nn.Dropout(0.2)
-        self.fc1 = nn.Linear(28800, 256)
+        self.fc1 = nn.Linear(123008, 256)
         self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 2)
 
@@ -52,7 +52,7 @@ class CNN(nn.Module):
                 print(
                     "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
                         epoch,
-                        batch_idx * len(data),
+                        batch_idx * train_loader.batch_size,
                         len(train_loader.dataset),
                         100.0 * batch_idx / len(train_loader),
                         loss.item(),
