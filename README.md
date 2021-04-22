@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🔥 Detection 🔥
-🧠 Codebase for  
+🧠 An UnSupervised Reinforcement Learning Pipeline for Video Frame Classification
 
 | **🚧 This is a Proof of Concept Project 🚧** |
 |:-------------------:|
