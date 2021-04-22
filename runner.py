@@ -9,6 +9,7 @@ from torchvision import datasets, transforms
 
 import gym_env
 from agents import cnn, dqn
+from agents.usrl.trainer import USRLNet
 
 gym_env.dummy()  # Calls __init__
 
@@ -77,7 +78,7 @@ def main():
         help="For Saving the current Model",
     )
     parser.add_argument(
-        "--arch", type=str, default="dqn", help="Can be either of CNN, DQN"
+        "--arch", type=str, default="usrl", help="Can be either of CNN, DQN, USRL"
     )
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -111,18 +112,20 @@ def main():
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
     if args.arch.lower() == "dqn":
-        # Initialization of the environment
         env = gym.make(
             "ProjectAgni-v0", train_loader=train_loader, test_loader=test_loader
         )
         _ = env.reset()
-
-        # online_model = dqn.QNet().to(device)
-        # target_model = dqn.QNet().to(device)
         model = dqn.QNet().to(device)
     elif args.arch.lower() == "cnn":
         env = None
         model = cnn.CNN().to(device)
+    elif args.arch.lower() == "usrl":
+        env = gym.make(
+            "ProjectAgni-v0", train_loader=train_loader, test_loader=test_loader
+        )
+        _ = env.reset()
+        model = USRLNet().to(device)
     else:
         raise NotImplementedError
 

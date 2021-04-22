@@ -14,7 +14,9 @@ class QNet(CNN):
         super(QNet, self).__init__()
 
     @classmethod
-    def train_model(cls, args, model, device, train_loader, optimizer, epoch, env=None, **kwargs):
+    def train_model(
+        cls, args, model, device, train_loader, optimizer, epoch, env=None, **kwargs
+    ):
         model.train()
         _ = env.reset()
         batch_idx, (data, target) = next(enumerate(train_loader))

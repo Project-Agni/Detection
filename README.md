@@ -24,7 +24,7 @@ The trained weights will be stored in the root of the runner script.
 # Todo 📜
 - [x] CNN
 - [x] RL - DQN
-- [ ] RL - USRL
+- [x] RL - USRL
 - [ ] Live cam test script
 
 # References 📑
