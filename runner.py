@@ -34,7 +34,7 @@ def main():
     parser.add_argument(
         "--epochs",
         type=int,
-        default=14,
+        default=5,
         metavar="N",
         help="number of epochs to train (default: 14)",
     )
@@ -87,7 +87,7 @@ def main():
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
-    train_kwargs = {"batch_size": args.batch_size, "drop_last": True}
+    train_kwargs = {"batch_size": args.batch_size}
     test_kwargs = {"batch_size": args.test_batch_size}
     if use_cuda:
         cuda_kwargs = {"num_workers": 1, "pin_memory": True, "shuffle": True}
@@ -102,9 +102,10 @@ def main():
         ]
     )
 
-    dataset = datasets.ImageFolder("datasets/train", transform=transform)
+    # dataset = datasets.ImageFolder("datasets/train", transform=transform)
+    dataset = datasets.ImageFolder("datasets/realtime", transform=transform)
     num_images = len(dataset)
-    train_split = int(0.8 * num_images)
+    train_split = int(0.9 * num_images)
     val_split = num_images - train_split
     dataset1, dataset2 = data.random_split(dataset, (train_split, val_split))
 
