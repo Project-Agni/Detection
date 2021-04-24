@@ -21,11 +21,16 @@ python runner.py --arch [cnn, dqn, usrl]
 ```
 The trained weights will be stored in the root of the runner script. 
 
+## Inference
+```shell
+python test.py
+```
+
 # Todo 📜
 - [x] CNN
 - [x] RL - DQN
 - [x] RL - USRL
-- [ ] Live cam test script
+- [x] Live cam test script
 
 # References 📑
 

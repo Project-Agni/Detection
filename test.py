@@ -59,7 +59,7 @@ def main():
             toc = time.time()
             fire_prob = 100 - probs[0][0].item() * 100
 
-            # Normalization and hard coding
+            # Fixing normalization and CV2 Message Overlays 🤪
             thresholds = [
                 350,  # Fire detect msg
                 800,  # Water Starts
