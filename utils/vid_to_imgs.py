@@ -12,7 +12,7 @@ try:
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
 except OSError:
-    print('Error: Creating directory of data')
+    print("Error: Creating directory of data")
 
 currentframe = 0
 
@@ -21,8 +21,8 @@ while True:
 
     if ret:
         if not currentframe % 50:
-            name = f'{save_folder}/frame' + str(currentframe) + '.jpg'
-            print('Creating...' + name)
+            name = f"{save_folder}/frame" + str(currentframe) + ".jpg"
+            print("Creating..." + name)
             cv2.imwrite(name, frame)
     else:
         break

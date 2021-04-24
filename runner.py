@@ -34,7 +34,7 @@ def main():
     parser.add_argument(
         "--epochs",
         type=int,
-        default=5,
+        default=3,
         metavar="N",
         help="number of epochs to train (default: 14)",
     )
@@ -98,12 +98,13 @@ def main():
         [
             transforms.Resize((256, 256)),
             transforms.ToTensor(),
-            transforms.Normalize((0.4363, 0.3613, 0.3098), (0.2360, 0.2087, 0.1925)),
+            transforms.Normalize((0.3474, 0.3190, 0.3274), (0.0780, 0.0736, 0.0751)),
+            transforms.RandomHorizontalFlip(p=0.5)
         ]
     )
 
-    # dataset = datasets.ImageFolder("datasets/train", transform=transform)
-    dataset = datasets.ImageFolder("datasets/realtime", transform=transform)
+    dataset = datasets.ImageFolder("datasets/train", transform=transform)
+    # dataset = datasets.ImageFolder("datasets/realtime", transform=transform)
     num_images = len(dataset)
     train_split = int(0.9 * num_images)
     val_split = num_images - train_split

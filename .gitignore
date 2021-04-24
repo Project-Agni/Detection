@@ -6,6 +6,9 @@
 datasets/train
 datasets/realtime
 
+# Model Ckpts
+*.pt
+
 ### JupyterNotebooks template
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/

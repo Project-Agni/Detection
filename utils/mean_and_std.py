@@ -7,7 +7,7 @@ def main():
         transforms.Resize((128, 128)),
         transforms.ToTensor()
     ])
-    dataset = datasets.ImageFolder("../datasets/train", transform=transform)
+    dataset = datasets.ImageFolder("../datasets/realtime", transform=transform)
     loader = data.DataLoader(dataset, batch_size=10, num_workers=0, shuffle=False)
 
     mean = 0.0
